@@ -81,3 +81,18 @@ Does this apply after the `sellIn` date? Probably not but should test.
 
 What happens to the legendary items if the quality isn't set to 80 in the constructor? Does it just stay the same or is
 it increased to 80 somehow? 
+
+## Refactoring plan
+Strategy pattern seems fine here. I don't want a rigid inheritance tree just because of the upper and lower bounds on the
+quality, so this might be better in a separate strategy. Some sort of decorator can wrap the 2 together so the bounds execute after
+the update, so the update strategies don't even need to bother with bounds. 
+
+Strategies will need to be determined based on the name of the item. A simple factory method that returns the right strategy
+per name should probably be enough. 
+
+The strategy for "smelly items" is pretty much the same as normal items but with a multiplier. I could add a multiplier to
+the constructor of the default update strategy instead of making a new strategy altogether for it. Remains to be seen which
+is simpler.
+
+One thing that annoys me is where the base "unit" of quality change will live. I don't really have a good place to put this
+so I'll probably have to put it somewhere in a constants class as a static constant. 
