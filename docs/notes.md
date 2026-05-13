@@ -96,3 +96,8 @@ is simpler.
 
 One thing that annoys me is where the base "unit" of quality change will live. I don't really have a good place to put this
 so I'll probably have to put it somewhere in a constants class as a static constant. 
+
+Note after a semi-failed first attempt: I failed to take into account that `sellIn` conditionally decrements. I don't really
+have a clean place to put that decrement right now. Another strategy feels kind of overkill for this, but I don't have a better
+solution. Perhaps two decorators? One for quality (update + clamp) and one for the entire item (sellIn + clampedUpdate).
+Or maybe combine it all into one decorator and have it just be "updateItem" instead of update quality.
