@@ -63,6 +63,9 @@ Maybe the validation logic can be in the strategies. Common & Legendary abstract
 common strategy ancestor enforces quality >= 0, concrete implementations do further calculations? Maybe, but an 
 inheritance tree like that might be too rigid. Doesn't sound terribly extensible. To investigate further later.
 
+There's an implicit assumption that "normal" quality change is a step of 1 (increase or decrease), and this can double.
+This should probably be configured somewhere centrally instead of just doing + 1 everywhere? 
+
 Trying to clean up the if statements a bit first before doing a full refactoring might be useful? But if the tests work
 well enough, that might not be necessary.
 
