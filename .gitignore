@@ -11,3 +11,5 @@ bin/
 .gradle
 /build/
 
+# Coverage report
+htmlReport/
