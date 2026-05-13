@@ -227,9 +227,9 @@ class GildedTrosTest {
         private static Stream<Scenario> smellyItemScenarios() {
             return Stream.of(
                     new Scenario("before sell date, quality decreases by two", 11, DEFAULT_QUALITY, DEFAULT_QUALITY - 2),
-                    new Scenario("after sell date, quality decreases by four", 10, DEFAULT_QUALITY, DEFAULT_QUALITY - 4),
+                    new Scenario("after sell date, quality decreases by four", 0, DEFAULT_QUALITY, DEFAULT_QUALITY - 4),
                     new Scenario("before sell date, quality does not drop below zero", 10, ONE_QUALITY, ZERO_QUALITY),
-                    new Scenario("after sell date, quality does not drop below zero", 10, ONE_QUALITY, ZERO_QUALITY)
+                    new Scenario("after sell date, quality does not drop below zero", 0, ONE_QUALITY, ZERO_QUALITY)
 
             );
         }
