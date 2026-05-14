@@ -12,39 +12,30 @@ import com.gildedtros.strategy.sell.CommonUpdateSellInStrategy;
 import com.gildedtros.strategy.sell.LegendaryUpdateSellInStrategy;
 import com.gildedtros.strategy.sell.UpdateSellInDecorator;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ItemStrategyFactory {
     private ItemStrategyFactory() {
     }
 
-    private static final List<String> LEGENDARY_ITEMS = List.of(
-            "B-DAWG Keychain"
-    );
-
-    private static final List<String> BACKSTAGE_PASSES = List.of(
-            "Backstage passes for Re:Factor",
-            "Backstage passes for HAXX"
-    );
-
-    private static final List<String> SMELLY_ITEMS = List.of(
-            "Duplicate Code",
-            "Long Methods",
-            "Ugly Variable Names"
+    private static final Map<Set<String>, UpdateItemStrategy> strategyMap = Map.of(
+            Set.of("B-DAWG Keychain"), legendary(),
+            Set.of("Backstage passes for Re:Factor", "Backstage passes for HAXX"),
+            common(new BackstagePassQualityUpdateStrategy()),
+            Set.of("Good Wine"), common(new GoodWineQualityUpdateStrategy()),
+            Set.of("Duplicate Code",
+                    "Long Methods",
+                    "Ugly Variable Names"), common(new CommonItemQualityUpdateStrategy(2))
     );
 
     public static UpdateItemStrategy forItem(final Item item) {
-        if (LEGENDARY_ITEMS.contains(item.name)) {
-            return legendary();
-        } else if (BACKSTAGE_PASSES.contains(item.name)) {
-            return common(new BackstagePassQualityUpdateStrategy());
-        } else if (item.name.equals("Good Wine")) {
-            return common(new GoodWineQualityUpdateStrategy());
-        } else if (SMELLY_ITEMS.contains(item.name)) {
-            return common(new CommonItemQualityUpdateStrategy(2));
-        } else {
-            return common(new CommonItemQualityUpdateStrategy());
+        for (final Map.Entry<Set<String>, UpdateItemStrategy> entry : strategyMap.entrySet()) {
+            if (entry.getKey().contains(item.name)) {
+                return entry.getValue();
+            }
         }
+        return common(new CommonItemQualityUpdateStrategy());
     }
 
     private static UpdateItemStrategy common(UpdateItemStrategy qualityStrategy) {
