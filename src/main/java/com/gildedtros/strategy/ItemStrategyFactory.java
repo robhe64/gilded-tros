@@ -40,6 +40,8 @@ public class ItemStrategyFactory {
             return common(new BackstagePassQualityUpdateStrategy());
         } else if (item.name.equals("Good Wine")) {
             return common(new GoodWineQualityUpdateStrategy());
+        } else if (SMELLY_ITEMS.contains(item.name)) {
+            return common(new CommonItemQualityUpdateStrategy(2));
         } else {
             return common(new CommonItemQualityUpdateStrategy());
         }
