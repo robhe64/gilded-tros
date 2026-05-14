@@ -1,10 +1,20 @@
 package com.gildedtros;
 
+import com.gildedtros.strategy.ItemStrategyFactory;
+
 class GildedTros {
     Item[] items;
 
     public GildedTros(Item[] items) {
         this.items = items;
+    }
+
+    // Temporary new method, will replace old one in time, just for arranging the new code
+    public void updateQualityNew() {
+        for (final Item item : items) {
+            // Should handle decrement sellIn, quality updates and bounds correctly
+            ItemStrategyFactory.forItem(item).updateQuality(item);
+        }
     }
 
     // Invoked each "day", decreasing sellIn of most things by 1
