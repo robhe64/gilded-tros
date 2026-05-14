@@ -14,7 +14,7 @@ public class UpdateSellInDecorator implements UpdateItemStrategy {
 
     @Override
     public void updateQuality(Item item) {
-        updateSellInStrategy.updateSellIn(item);
         updateItemStrategy.updateQuality(item);
+        updateSellInStrategy.updateSellIn(item);
     }
 }

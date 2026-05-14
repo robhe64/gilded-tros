@@ -2,14 +2,22 @@ package com.gildedtros.strategy;
 
 import com.gildedtros.Item;
 import com.gildedtros.strategy.bounds.CommonQualityBound;
+import com.gildedtros.strategy.bounds.LegendaryQualityBound;
 import com.gildedtros.strategy.bounds.QualityBoundDecorator;
+import com.gildedtros.strategy.quality.BackstagePassQualityUpdateStrategy;
 import com.gildedtros.strategy.quality.CommonItemQualityUpdateStrategy;
+import com.gildedtros.strategy.quality.GoodWineQualityUpdateStrategy;
+import com.gildedtros.strategy.quality.LegendaryItemQualityUpdateStrategy;
 import com.gildedtros.strategy.sell.CommonUpdateSellInStrategy;
+import com.gildedtros.strategy.sell.LegendaryUpdateSellInStrategy;
 import com.gildedtros.strategy.sell.UpdateSellInDecorator;
 
 import java.util.List;
 
 public class ItemStrategyFactory {
+    private ItemStrategyFactory() {
+    }
+
     private static final List<String> LEGENDARY_ITEMS = List.of(
             "B-DAWG Keychain"
     );
@@ -27,8 +35,11 @@ public class ItemStrategyFactory {
 
     public static UpdateItemStrategy forItem(final Item item) {
         if (LEGENDARY_ITEMS.contains(item.name)) {
-            // implement later
-            return null;
+            return legendary();
+        } else if (BACKSTAGE_PASSES.contains(item.name)) {
+            return common(new BackstagePassQualityUpdateStrategy());
+        } else if (item.name.equals("Good Wine")) {
+            return common(new GoodWineQualityUpdateStrategy());
         } else {
             return common(new CommonItemQualityUpdateStrategy());
         }
@@ -39,6 +50,15 @@ public class ItemStrategyFactory {
                 new CommonUpdateSellInStrategy(),
                 new QualityBoundDecorator(
                         new CommonQualityBound(), qualityStrategy
+                )
+        );
+    }
+
+    private static UpdateItemStrategy legendary() {
+        return new UpdateSellInDecorator(
+                new LegendaryUpdateSellInStrategy(),
+                new QualityBoundDecorator(
+                        new LegendaryQualityBound(), new LegendaryItemQualityUpdateStrategy()
                 )
         );
     }
