@@ -101,3 +101,44 @@ Note after a semi-failed first attempt: I failed to take into account that `sell
 have a clean place to put that decrement right now. Another strategy feels kind of overkill for this, but I don't have a better
 solution. Perhaps two decorators? One for quality (update + clamp) and one for the entire item (sellIn + clampedUpdate).
 Or maybe combine it all into one decorator and have it just be "updateItem" instead of update quality.
+
+## Conclusion
+The new structure of the code relies heavily on the strategy and decorator patterns to modularize the business logic. 
+The strategy pattern came to mind pretty quickly when analyzing the requirements. The decorators emerged a bit more
+organically as there was some complexity (mainly the arguably simple logic of `sellIn`) that I couldn't neatly fit
+into the quality strategies. The new code is significantly more extensible than the old code due to these patterns,
+as new strategies for new items can very easily be added. The logic for the bounds and sell decrements can also be 
+adapted or extended if new types of items are added in the future.
+
+To implement the requested new feature, I changed the implementation of `CommonItemQualityUpdateStrategy` to accept a
+multiplier. I considered making a new strategy entirely for this, but it's not really necessary, as the logic doesn't
+actually change, just a factor in the calculation. If the business logic for these items changes in the future, it's 
+still simple to create a new strategy anyway, but for now I didn't find it necessary.
+
+I had also briefly considered abstracting the "expiration" logic away to somewhere else, so I didn't have to do the
+"if/else" in every strategy, but I decided against it. The expiration logic is different for almost every strategy, so 
+it would probably just map one to one with the strategy anyway. It would just overcomplicate things for no real benefit.
+
+I'm mostly happy with the current implementation, but of course nothing is perfect. There are still some things
+that I would consider to be tradeoffs of the current implementation:
+ - The factory is a bit messy. This is partly a consequence of having to map the item's name to a specific strategy, 
+    so I didn't really have a better solution for this. 
+ - The factory returns the same instance of a strategy for every type of item. This is fine because the strategies are 
+    stateless, but if they were to become stateful, this would be a problem. Though I can't really think of a good reason
+    for these to become stateful in the first place.
+ - It could be argued that the complexity cost of abstracting away the decrement isn't really worth it. Having another
+    set of strategies and another decorator just to replace the conditional decrement might be overkill, but I think
+    it's defensible to do it this way. It would have bugged me to keep the decrement as the only concrete update inside
+    the `GildedTros` class.
+ - The strategies mutate the state of `Item` directly. This was simpler to me because I didn't have to pass the values
+    around to every step, but it does mean that at some point, the `Item` class will have invalid state. The strategies
+    used must be properly decorated to avoid invalid state to be present after the `updateQuality` invocation. With a
+    properly decorated strategy, the invalid state will only be possible between the execution of the quality strategies
+    and the `QualityBound` execution. The final result will be valid, though. 
+ - The `updateQuality` method implicitly updates `sellIn` as well. Given that this happened in the old code as well and
+    that was still the behavior I had to replicate, it's not really a tradeoff, but something to keep in mind. The
+    method name doesn't really explicitly state that `sellIn` will change as well.
+
+Since in the old code, some updates happened before `sellIn` got decremented, and some happened after,
+some updates had to be slightly adapted. The end behavior is still the same, but some checks changed from `x < 0` to 
+`x < 1` to compensate for this. 
